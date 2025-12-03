@@ -19,12 +19,7 @@ db.employee.insertMany([
       { "name": "CRM App", "role": "Backend", "durationMonths": 6 },
       { "name": "E-commerce Site", "role": "Full Stack", "durationMonths": 9 }
     ]
-  },
-  {
-    "name": "Ravi Patel",
-    "age": 34,
-    "position": "Data Analyst",
-    "salary": 78000,
+  },git push -u
     "place": "San Francisco",
     "department": "Data Science",
     "isActive": false,
