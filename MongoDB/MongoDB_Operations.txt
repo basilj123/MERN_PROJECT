@@ -19,7 +19,7 @@ db.user.drop()
 7.Insert Documents into Collection
 -- Insert one Document
 db.user.insertOne({ name: 'Anju', age: 26, city: 'Muvattupuzha', designation: 'Pharmist' })
-f
+
 -- Insert many Documents
 db.user.insertMany(
     [

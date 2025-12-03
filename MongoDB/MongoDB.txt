@@ -19,7 +19,8 @@ db.employee.insertMany([
       { "name": "CRM App", "role": "Backend", "durationMonths": 6 },
       { "name": "E-commerce Site", "role": "Full Stack", "durationMonths": 9 }
     ]
-  },git push -u
+  },
+  {
     "place": "San Francisco",
     "department": "Data Science",
     "isActive": false,
