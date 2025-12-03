@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>try,catch,finally,throw</title>
+</head>
+<body>
+    <script>
+        console.log("Started");
+        let a,b,result = 0;
+
+        try{
+           a = myFun1();
+           b = myFun2();
+           result = funAdd(a,b);
+        }catch(e){
+            console.log(e);
+            result = 0; 
+        }
+        finally{
+           console.log("try or catch!,finally runs no matter what");
+        }
+        console.log(result);
+
+        console.log("Ended");
+        
+        function myFun1(){
+            return 14;
+        }
+
+        function myFun2(){
+            // const obj1 = undefined;
+            // return obj1.value;
+            throw new Error('My Own error')
+            return 16;
+        }
+
+        function funAdd(a,b){
+            return a+b;
+        }
+
+    </script>
+</body>
+</html>

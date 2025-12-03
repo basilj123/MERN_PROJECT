@@ -1,0 +1,304 @@
+* Create and Switch to Database
+use newDB
+
+* Create Collections
+db.createCollection('employee')
+
+* Insert Documents
+db.employee.insertMany([
+  {
+    "name": "Ravi Patel",
+    "age": 34,
+    "position": "Data Analyst",
+    "salary": 78000,
+    "place": "San Francisco",
+    "department": "Data Science",
+    "isActive": false,
+    "skills": ["Python", "SQL", "Tableau"],
+    "projects": [
+      { "name": "Sales Dashboard", "role": "Data Visualizer", "durationMonths": 5 }
+    ]
+  },
+  {
+    "name": "Sara Lee",
+    "age": 26,
+    "position": "Frontend Developer",
+    "salary": 72000,
+    "place": "Miami",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["HTML", "CSS", "React", "JavaScript"],
+    "projects": [
+      { "name": "Website Revamp", "role": "UI Designer", "durationMonths": 4 }
+    ]
+  },
+  {
+    "name": "Daniel Kim",
+    "age": 41,
+    "position": "Project Manager",
+    "salary": 105000,
+    "place": "Seattle",
+    "department": "Management",
+    "isActive": true,
+    "skills": ["Agile", "Scrum", "Leadership"],
+    "projects": [
+      { "name": "Infrastructure Upgrade", "role": "Manager", "durationMonths": 10 }
+    ]
+  },
+  {
+    "name": "Linda Gomez",
+    "age": 38,
+    "position": "HR Specialist",
+    "salary": 68000,
+    "place": "Chicago",
+    "department": "HR",
+    "isActive": false,
+    "skills": ["Recruiting", "Onboarding", "Communication"],
+    "projects": []
+  },
+  {
+    "name": "Mohammed Khan",
+    "age": 30,
+    "position": "Backend Developer",
+    "salary": 88000,
+    "place": "Houston",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["Node.js", "Express", "MongoDB"],
+    "projects": [
+      { "name": "API Gateway", "role": "Lead Developer", "durationMonths": 8 }
+    ]
+  },
+  {
+    "name": "Emily Chen",
+    "age": 24,
+    "position": "UX Designer",
+    "salary": 67000,
+    "place": "Boston",
+    "department": "Design",
+    "isActive": true,
+    "skills": ["Figma", "Sketch", "User Research"],
+    "projects": [
+      { "name": "Mobile App UX", "role": "Designer", "durationMonths": 6 }
+    ]
+  },
+  {
+    "name": "James Smith",
+    "age": 45,
+    "position": "DevOps Engineer",
+    "salary": 97000,
+    "place": "Austin",
+    "department": "IT",
+    "isActive": false,
+    "skills": ["Docker", "Kubernetes", "AWS"],
+    "projects": [
+      { "name": "CI/CD Pipeline", "role": "DevOps Lead", "durationMonths": 12 }
+    ]
+  },
+  {
+    "name": "Alice Johnson",
+    "age": 29,
+    "position": "Software Engineer",
+    "salary": 85000,
+    "place": "New York",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["JavaScript", "Node.js", "MongoDB"],
+    "projects": [
+      { "name": "CRM App", "role": "Backend", "durationMonths": 6 },
+      { "name": "E-commerce Site", "role": "Full Stack", "durationMonths": 9 }
+    ]
+  }
+]);
+
+--------------- QUERY QUESTIONS ----------------
+Find all employees.
+db.employee.find().pretty()
+
+Find employees who are active.
+db.employee.find({isActive: true})
+
+Get all employees in the "Engineering" department.
+db.employee.find({department: 'Engineering'})
+
+Find employees from "New York".
+db.employee.find({place: 'New York'})
+
+List all employees whose age is less than 30.
+db.employee.find({age: {$lt: 30}})
+
+Find the employee named "Alice Johnson".
+db.employee.find({name: 'Alice Johnson'})
+
+Retrieve employees who have "JavaScript" as a skill.
+db.employee.find({skills: 'JavaScript'})
+
+List employees with a salary greater than 80,000.
+db.employee.find({salary: {$gt: 80000}})
+
+Find employees who have no projects.
+db.employee.find({projects: {$size: 0}}) - only shows exact 0 projects matches [works for exact matches]
+db.employee.find({$expr: {$eq: [{$size: '$projects'},0]}}) - Safer Method
+
+db.employee.find({projects: {$size: 1}}) - only shows exact 1 projects matches [works for exact matches]
+db.employee.find({$expr: {$eq: [{$size: '$projects'},1]}}) - Safer Method
+
+db.employee.find({projects: {$size: 2}}) - only shows exact 2 projects matches [works for exact matches]
+db.employee.find({$expr: {$eq: [{$size: '$projects'},2]}}) - Safer Method
+
+Find employees who have more than one project.
+db.employee.find({projects: {$size: {$gte: 1}}}) - error[$size doesn't take operators]
+db.employee.find({$expr: {$gt: [{$size: '$projects'},1]}})
+db.employee.find({'projects.1': {$exists: true}})
+
+
+Projection & Filtering
+Show only the name and position of each employee.
+db.employee.find({},{_id: 0,name: 1,position: 1})
+db.employee.aggregate([{$project: {_id: 0,name: 1,position: 1}}])
+
+Display name, place, and department for all inactive employees.
+db.employee.find({isActive: false},{_id: 0,name: 1,place: 1,department: 1})
+db.employee.aggregate([{$match: {isActive: false}},{$project: {_id: 0,name: 1,place: 1,department: 1}}])
+
+List names of employees and their total number of skills.
+db.employee.find({},{_id: 0,name: 1,totalSkills: {$size: '$skills'}})
+db.employee.aggregate([{$project: {_id: 0,name: 1,totalSkills: {$size: '$skills'}}}])
+
+
+Show names of employees with their number of projects.
+db.employee.find({},{_id: 0,name: 1,projectCount: {$size: '$projects'}})
+db.employee.aggregate([{$project: {_id: 0,name: 1,projectCount: {$size: '$projects'}}}])
+
+Find employees with "React" and "JavaScript" both in their skills.
+db.employee.find({skills: {$all: ['React','JavaScript']}})
+db.employee.aggregate([{$match: {skills: {$all: ['React','JavaScript']}}}])
+db.employee.find({$and: [{skills: 'React'},{skills: 'JavaScript'}]})
+
+Insert Operations
+Insert a new employee document into the collection.
+db.employee.insertOne(
+  {
+    "name": "Basil Jose",
+    "age": 26,
+    "position": "Software Developer",
+    "salary": 35000,
+    "place": "Kochi",
+    "department": "IT",
+    "isActive": true,
+    "skills": ["HTML", "CSS", "JavaScript"],
+    "projects": [
+      { "name": "Website", "role": "MERN Stack", "durationMonths": 10 }
+    ]
+  }
+)
+
+Add a new skill to an existing employee.
+db.employee.updateOne({name: 'Basil Jose'},{$push: {skills: 'Node.js'}})
+db.employee.updateOne({name: 'Basil Jose'},{$addToSet: {skills: 'Node.js'}}) - Duplicates doesn't add
+-- Add more than one skills to an existing employee
+db.employee.updateOne({name: 'Basil Jose'},{$push: {skills: {$each: ['MongoDB','GIT']}}})
+db.employee.updateOne({name: 'Basil Jose'},{$addToSet: {skills: {$each: ['MongoDB','GIT']}}}) - Duplicates doesn't add
+
+Insert a new project into a specific employee's projects array.
+db.employee.updateOne({name: 'Basil Jose'},{$push: {projects: {name: 'E Commerce',role: 'Team leader',durationMonths: 6}}})
+db.employee.updateOne({name: 'Basil Jose'},{$addToSet: {projects: {name: 'E Commerce',role: 'Team leader',durationMonths: 6}}})
+
+Insert multiple employee records using insertMany().
+db.employee.insertMany([
+  {
+    "name": "Rosiya Ann Viju",
+    "age": 22,
+    "position": "Engineer",
+    "salary": 58000,
+    "place": "Kolenchery",
+    "department": "Engineering",
+    "isActive": false,
+    "skills": ["Onboarding", "Communication"],
+    "projects": []
+  },
+  {
+    "name": "Sandra Sakaria",
+    "age": 25,
+    "position": "Dentist",
+    "salary": 90000,
+    "place": "Piravom",
+    "department": "MBBS",
+    "isActive": true,
+    "skills": ["Anchor", "Communication"],
+    "projects": [
+      { "name": "API Gateway", "role": "Leadership", "durationMonths": 8 }
+    ]
+  }
+]
+);
+
+Insert a project for all employees in the Engineering department.
+db.employee.updateMany({department: 'Engineering'},{$push: {projects: { "name": "LINKEDIN", "role": "Leadership", "durationMonths": 5 }}})
+db.employee.updateMany({department: 'Engineering'},{$addToSet: {projects: { "name": "LINKEDIN", "role": "Leadership", "durationMonths": 5 }}})
+
+Update Operations
+Update the salary of "Ravi Patel" to 82,000.
+
+Change "Sara Lee"'s position to "Senior Frontend Developer".
+
+Add "TypeScript" to "Alice Johnson"'s skills array.
+
+Update all active employees to include "remote": true.
+
+Rename a skill (e.g., "Sketch" to "Figma Design") in "Emily Chen"'s skills array.
+
+Delete Operations
+Delete the employee named "James Smith".
+
+Delete all employees who are inactive.
+
+Remove a specific project from "Daniel Kim".
+
+Delete all employees with no skills.
+
+Remove the first skill from each employee’s skill array.
+
+Array Queries
+Find employees who have exactly 3 skills.
+
+Get employees who worked on a project for more than 6 months.
+
+Find employees who have worked on a project with the role "Manager".
+
+Check if any employee has "Node.js" and "MongoDB" both in their skills.
+
+Get employees whose first project duration is more than 5 months.
+
+ Aggregation & Grouping
+Count the number of employees in each department.
+
+Get the average salary by department.
+
+Count the total number of projects in the company.
+
+Find the total number of skills used across all employees.
+
+Find the employee with the highest salary.
+
+ Sorting & Limiting
+Sort employees by salary in descending order.
+
+Sort employees by age (youngest to oldest).
+
+Show the top 3 highest-paid employees.
+
+Display the 5 oldest employees.
+
+Sort employees by the number of projects they’ve worked on.
+
+ Advanced Use Cases
+Find departments that have both active and inactive employees.
+
+Check if two employees from different departments have the same skill.
+
+Create a view to show each employee with their total project duration.
+
+Create a query to return employees tagged as "Junior" if age < 30, else "Experienced".
+
+Create an index on the skills array field and perform a fast search for "MongoDB".

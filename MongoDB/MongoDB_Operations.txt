@@ -1,0 +1,145 @@
+1.Create & Switch Database
+use myDatabase
+
+2.Show Databases
+show dbs
+
+3.Drop Database
+db.dropDatabase()
+
+4.Create a Collection
+db.createCollection('user')
+
+5.Show Collections
+show Collections
+
+6.Drop Collection
+db.user.drop()
+
+7.Insert Documents into Collection
+-- Insert one Document
+db.user.insertOne({ name: 'Anju', age: 26, city: 'Muvattupuzha', designation: 'Pharmist' })
+f
+-- Insert many Documents
+db.user.insertMany(
+    [
+        { name: 'Basil', age: 20, city: 'Kochi', designation: 'Developer' },
+        { name: 'Rosiya', age: 23, city: 'Kolenchery', designation: 'Engineer' },
+        { name: 'Sandra', age: 25, city: 'Kochi', designation: 'Dentist' },
+        { name: 'Amitha', age: 22, city: 'Kochi', designation: 'Accountant' },
+        { name: 'Alex', age: 24, city: 'Chennai', designation: 'Mechanic' }
+    ]
+)
+
+8.Read/Query Documents
+-- All Documents
+db.user.find()
+
+-- Formatted(pretty) Documents
+db.user.find().pretty()
+
+9.Update Documents
+-- Update one Document & sub document
+db.user.updateOne({name: 'Basil'}, {$set: { age: 25,designation: 'Software Developer',"address.place": "pampakuda","address.pincode": 686667}},{upsert: true})
+db.user.updateOne({name: 'Basil'}, {$push: { address: [{address.place: 'piravom',address.pincode: 686665}]}})
+db.user.updateOne({city: 'Kolenchery'}, {$set: {skills: ['Engineer','model','anchor']}})
+db.user.updateOne({name: 'Basil'}, {$inc: {age: 1}}) - [Increase age 1]
+
+-- Update Many Documents
+db.user.updateMany({city: 'Kochi'}, {$set: {city: Ernakulam}})
+db.user.updateMany({}, {$set: {nation: Indian}}) - [add new key-value to every documents]
+db.user.updateMany({}, {$rename: {nation: 'nationality'}}) - [change key name from every documents]
+db.user.updateMany({ciy: 'Ernakulam'},{$rename: {nation: 'nationality'}}) - [change key name only satisfied condition in documents]
+db.user.updateMany({}, {$unset: {nationality: " "}}) - [remove key name from every documents]
+
+-- Replace one Document
+db.user.replaceOne({name: 'Alex'}, {name: 'Akshai', age: 25, city: 'Piravom', designation: 'Quality Controller'})
+
+10.Delete Documents
+-- Delete one Document
+db.user.deleteOne({name: 'Akshai'})
+
+-- Delete Many Documents
+db.user.deleteMany({age: 25})
+
+-- Delete All Documents
+db.user.deleteMany({})
+
+11.Query Documents
+db.user.find({age: 25}).pretty()
+
+-- show some fields only
+db.user.find({},{name: 1,designation: 1,_id: 0})
+
+-- show only documents with condition & some fields only
+db.user.find({city: 'Ernakulam'},{name: 1,designation: 1,_id: 0})
+
+-- limit Documents
+db.user.find().limit(3).pretty()
+
+-- limit & skip Documents
+db.user.find().skip(4).limit(2).pretty()
+
+12.Query Operators
+-- equals to operatorg
+db.user.find({age: {$eq: 26}})
+db.user.find({city: {$eq: 'Ernakulam'}})
+
+-- not equal to operator
+db.user.find({age: {$ne: 26}})
+db.user.find({city: {$ne: 'Ernakulam'}})
+
+-- greater than operator
+db.user.find({age: {$gt: 24}})
+
+-- greater than or equals to operator
+db.user.find({age: {$gte: 24}})
+
+-- less than operator
+db.user.find({age: {$lt: 24}})
+
+-- less than or equals to operator
+db.user.find({age: {$lte: 24}})
+
+-- in operator
+db.user.find({city: {$in: ["Ernakulam","Kolenchery"]}})
+
+13.Logical Operators
+-- $and operator
+db.user.find({$and: [{city: {$eq: 'Ernakulam'}},{age: {$eq: 26}}]}).pretty()
+
+-- $or operator
+db.user.find({$or: [{city: {$eq: 'Ernakulam'}},{age: {$eq: 25}}]}).pretty()
+db.user.find({$or: [{city: {$eq: 'Ernakulam'}},{city: {$eq: 'Kolenchery'}}]}).pretty()
+
+-- $nor operator
+db.user.find({$nor: [{city: 'Ernakulam'},{age: {$gt: 25}}]}).pretty()
+
+-- $not operator
+db.user.find({city: {$not: {$eq: 'Ernakulam'}}}).pretty()
+db.user.find({age: {$not: {$gt: 25}}}).pretty()
+
+//Combining $and - $or operators together
+//Need Users from Ernakulam city who are 23 or older
+db.user.find({$and: [{city: 'Ernakulam'},{age: {$gte: 23}}]}).pretty()
+
+//Need users from Ernakulam city or Kolenchery city
+db.user.find({$or: [{city: {$eq: 'Ernakulam'}},{city: {$eq: 'Kolenchery'}}]}).pretty()
+
+//Need users from Ernakulam or kolenchery city  who are 23 or older 
+db.user.find({$and: [{$or: [{city: 'Ernakulam'},{city: 'Kolenchery'}]},{age: {$gte: 23}}]}).pretty()
+
+-- $nin(not in) operator
+db.user.find({city: {$nin: ['Ernakulam','Kolenchery']}}).pretty()
+
+14.Sort Operator
+-- Ascending order
+db.user.find().sort({age: 1}).pretty() - //age
+db.user.find().sort({name: 1}).pretty() - //name
+
+-- Descending order
+db.user.find().sort({age: -1}).pretty() - //age
+db.user.find().sort({name: -1}).pretty() - //name
+
+15.findOne 
+db.user.findOne().pretty()

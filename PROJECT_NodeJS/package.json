@@ -1,0 +1,16 @@
+{
+  "name": "project_nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start_1": "node 1.path_modules.js",
+    "start_2": "node 2.fs_modules_promises.js",
+    "start_3": "node HTTP_modules.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

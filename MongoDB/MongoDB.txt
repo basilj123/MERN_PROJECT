@@ -1,0 +1,576 @@
+Create a new Database & switch to that Database
+   use myDB
+
+Create a new Collection
+   db.createCollection('employee')
+
+Insert documents into collection
+db.employee.insertMany([
+  {
+    "name": "Alice Johnson",
+    "age": 29,
+    "position": "Software Engineer",
+    "salary": 85000,
+    "place": "New York",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["JavaScript", "Node.js", "MongoDB"],
+    "projects": [
+      { "name": "CRM App", "role": "Backend", "durationMonths": 6 },
+      { "name": "E-commerce Site", "role": "Full Stack", "durationMonths": 9 }
+    ]
+  },
+  {
+    "name": "Ravi Patel",
+    "age": 34,
+    "position": "Data Analyst",
+    "salary": 78000,
+    "place": "San Francisco",
+    "department": "Data Science",
+    "isActive": false,
+    "skills": ["Python", "SQL", "Tableau"],
+    "projects": [
+      { "name": "Sales Dashboard", "role": "Data Visualizer", "durationMonths": 5 }
+    ]
+  },
+  {
+    "name": "Sara Lee",
+    "age": 26,
+    "position": "Frontend Developer",
+    "salary": 72000,
+    "place": "Miami",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["HTML", "CSS", "React", "JavaScript"],
+    "projects": [
+      { "name": "Website Revamp", "role": "UI Designer", "durationMonths": 4 }
+    ]
+  },
+  {
+    "name": "Daniel Kim",
+    "age": 41,
+    "position": "Project Manager",
+    "salary": 105000,
+    "place": "Seattle",
+    "department": "Management",
+    "isActive": true,
+    "skills": ["Agile", "Scrum", "Leadership"],
+    "projects": [
+      { "name": "Infrastructure Upgrade", "role": "Manager", "durationMonths": 10 }
+    ]
+  },
+  {
+    "name": "Linda Gomez",
+    "age": 38,
+    "position": "HR Specialist",
+    "salary": 68000,
+    "place": "Chicago",
+    "department": "HR",
+    "isActive": false,
+    "skills": ["Recruiting", "Onboarding", "Communication"],
+    "projects": []
+  },
+  {
+    "name": "Mohammed Khan",
+    "age": 30,
+    "position": "Backend Developer",
+    "salary": 88000,
+    "place": "Houston",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["Node.js", "Express", "MongoDB"],
+    "projects": [
+      { "name": "API Gateway", "role": "Lead Developer", "durationMonths": 8 }
+    ]
+  },
+  {
+    "name": "Emily Chen",
+    "age": 24,
+    "position": "UX Designer",
+    "salary": 67000,
+    "place": "Boston",
+    "department": "Design",
+    "isActive": true,
+    "skills": ["Figma", "Sketch", "User Research"],
+    "projects": [
+      { "name": "Mobile App UX", "role": "Designer", "durationMonths": 6 }
+    ]
+  },
+  {
+    "name": "James Smith",
+    "age": 45,
+    "position": "DevOps Engineer",
+    "salary": 97000,
+    "place": "Austin",
+    "department": "IT",
+    "isActive": false,
+    "skills": ["Docker", "Kubernetes", "AWS"],
+    "projects": [
+      { "name": "CI/CD Pipeline", "role": "DevOps Lead", "durationMonths": 12 }
+    ]
+  }
+]);
+
+:::::::: 1.find() queries ::::::::
+SECTION 1 — BASIC FILTER QUESTIONS
+
+1.1 Find all employees who live in Houston.
+    db.employee.find({place: 'Houston'});
+
+1.2 Find the employee whose name is Daniel Kim.
+    db.employee.find({name: 'Daniel Kim'});
+
+1.3 Find all employees who are active.
+    db.employee.find({isActive: true});
+
+1.4 Find employees from the HR department.
+    db.employee.find({department: 'HR'});
+
+1.5 Find employees earning exactly 72000.
+    db.employee.find({salary: {$eq: 72000}});
+
+
+
+---
+
+SECTION 2 — MULTIPLE CONDITION QUESTIONS
+
+1.6 Find employees who are active and live in New York.
+    db.employee.find({isActive: true,place: 'New York'});
+    db.employee.find({$and: [{isActive: true},{place: 'New York'}]});
+
+1.7 Find employees who are inactive and work in Data Science.
+    db.employee.find({isActive: false,department: 'Data Science'});
+
+1.8 Find employees who are Backend Developers and earn more than 80000.
+    db.employee.find({position: 'Backend Developer',salary: {$gt: 80000}});
+
+1.9 Find employees younger than 30 and active.
+    db.employee.find({age: {$lt: 30},isActive: true});
+
+1.10 Find employees who live in Austin and are inactive.
+     db.employee.find({place: 'Austin',isActive: false});
+
+
+
+---
+
+SECTION 3 — COMPARISON OPERATOR QUESTIONS
+
+1.11 Find employees older than 35.
+     db.employee.find({age: {$gt: 35}});
+
+1.12 Find employees with salary less than 80000.
+     db.employee.find({salary: {$lt: 80000}});
+
+1.13 Find employees whose age is between 25 and 35.
+     db.employee.find({age: {$gte: 25,$lte: 35}});
+
+1.14 Find employees whose salary is not equal to 88000.
+     db.employee.find({salary: {$ne: 88000}});
+
+1.15 Find employees whose age is not between 30 and 40.
+     db.employee.find({age: {$not: {$gte: 30,$lte: 40}}});
+
+
+
+---
+
+SECTION 4 — LOGICAL OPERATOR QUESTIONS
+
+1.16 Find employees who live in Miami or Boston.
+     db.employee.find({$or: [{place: 'Miami'},{place: 'Boston'}]});
+     db.employee.find({place: {$in: ['Miami','Boston']}});
+
+1.17 Find employees who are inactive or work in HR.
+     db.employee.find({$or: [{isActive: false},{department: 'HR'}]});
+
+1.18 Find employees whose department is not Engineering.
+     db.employee.find({department: {$ne: 'Engineering'}});
+
+1.19 Find employees who neither live in Chicago nor are active.
+     db.employee.find({$nor: [{place: 'Chicago'},{isActive: true}]});
+
+1.20 Find employees who do not work in Data Science.
+     db.employee.find({department: {$ne: 'Data Science'}});
+
+
+
+
+---
+
+SECTION 5 — ARRAY (skills) QUESTIONS
+
+1.21 Find employees who have JavaScript skill.
+     db.employee.find({skills: 'JavaScript'});
+
+1.22 Find employees who have both HTML and CSS skills.
+     db.employee.find({skills: {$all: ['HTML','CSS']}});
+
+1.23 Find employees who know Python or Docker.
+     db.employee.find({skills: {$in: ['Python','Docker']}});
+
+1.24 Find employees who do not have React skill.
+     db.employee.find({skills: {$ne: 'React'}});
+     db.employee.find({skills: {$nin: ['React']}});
+
+1.25 Find employees who have more than 3 skills.
+     db.employee.find({'skills.3': {$exists: true}});
+     db.employee.find({skills: {$exists: true},$where: 'this.skills.length > 3'});
+     db.employee.find({$expr: {$gt: [{$size: {$ifNull: ['$skills',[]]}},3]}});
+
+
+
+---
+
+SECTION 6 — ARRAY SIZE & ELEMENT MATCH
+
+1.26 Find employees who have exactly 3 skills.
+     db.employee.find({skills: {$size: 3}});
+
+1.27 Find employees whose skills array is empty.
+     db.employee.find({skills: {$size: 0}});
+
+1.28 Find employees whose first skill is “Node.js”.
+     db.employee.find({'skills.0': 'Node.js'});
+
+1.29 Find employees who have at least one skill matching the pattern “^J”.
+     db.employee.find({skills: {$regex: /^J/i}});
+
+1.30 Find employees who have at least one skill longer than 5 characters.
+     db.employee.find({})
+
+
+
+---
+
+SECTION 7 — NESTED PROJECTS QUESTIONS
+
+1.31 Find employees who worked on a project named “CRM App”.
+     db.employee.find({'projects.name': 'CRM App'});
+
+1.32 Find employees who worked on a project lasting more than 8 months.
+     db.employee.find({'projects.durationMonths': {$gt: 8}});
+
+1.33 Find employees whose project role is “Lead Developer”.
+     db.employee.find({'projects.role': 'Lead Developer'});
+
+1.34 Find employees who have at least one project.
+     db.employee.find({'projects.0': {$exists: true}});
+
+1.35 Find employees whose project duration is less than 6 months.
+     db.employee.find({'projects.durationMonths': {$lt: 6}});
+
+
+
+---
+
+SECTION 8 — REGEX QUESTIONS
+
+1.36 Find employees whose name starts with “S”.
+     db.employee.find({name: {$regex: /^S/i}});
+
+1.37 Find employees whose position contains the word “Engineer”.
+     db.employee.find({position: {$regex: /Engineer/i}});
+
+1.38 Find employees whose place ends with “go”.
+     db.employee.find({place: {$regex: /go$/i}});
+
+1.39 Find employees whose department starts with E or D.
+     db.employee.find({department: {$regex: /^[ED]/}});
+     db.employee.find({department: {$regex: /^[ed]/i}});
+
+1.40 Find employees whose name contains “an” anywhere.
+     db.employee.find({name: {$regex: /an/i}});
+
+
+
+---
+
+SECTION 9 — FIELD EXISTENCE & TYPE QUESTIONS
+
+1.41 Find employees who have the “projects” field.
+     db.employee.find({projects: {$exists: true}});
+
+1.42 Find employees who do not have the “skills” field.
+     db.employee.find({skills: {$exists: false}});
+
+1.43 Find employees whose salary field exists.
+     db.employee.find({salary: {$exists: true}});
+
+1.44 Find employees whose age is stored as a number.
+     db.employee.find({age: {$type: 'number'}});
+
+1.45 Find employees whose projects field exists but is empty.
+     db.employee.find({projects: {$exists: true,$size: 0}});
+
+
+
+---
+
+SECTION 10 — PROJECTION QUESTIONS
+
+1.46 Show only names and salaries of all employees.
+     db.employee.find({},{name: 1,salary: 1,_id: 0});
+
+1.47 Show names and skills but hide _id.
+     db.employee.find({},{name: 1,skills: 1,_id: 0});
+
+1.48 Show name, age, place of employees who are active.
+     db.employee.find({isActive: true},{name: 1,age: 1,place: 1,_id: 0});
+
+1.49 Show only name for employees in Engineering.
+     db.employee.find({department: 'Engineering'},{name: 1,_id: 0});
+
+1.50 Show name & first project details only (no other fields).
+     db.employee.find({},{name: 1,'projects.0': 1,_id: 0});
+
+
+
+---
+
+SECTION 11 — SORT, LIMIT & SKIP
+
+1.51 Sort employees by salary ascending.
+     db.employee.find().sort({salary: 1});
+
+1.52 Sort employees by age descending.
+     db.employee.find().sort({age: -1});
+
+1.53 Show first 2 highest paid employees.
+     db.employee.find().sort({salary: -1}).limit(2);
+
+1.54 Skip first 3 employees and show next 3.
+     db.employee.find().skip(3).limit(3);
+
+1.55 Show first 5 youngest employees.
+     db.employee.find().sort({age: 1}).limit(5);
+
+1.55 Count documents
+     db.employee.countDocuments();
+     db.employee.find().count();
+
+1.55 Count documents whose department is 'Engineering'
+     db.employee.countDocuments({department: 'Engineering'});
+     db.employee.find({department: 'Engineering'}).count();
+
+
+
+---
+
+SECTION 12 — COMPLEX FIND QUESTIONS
+
+1.56 Find employees who are active, work in Engineering, and have MongoDB skill.
+     db.employee.find({isActive: true,department: 'Engineering',skills: 'MongoDB'});
+
+1.57 Find employees who live in New York or Miami and earn more than 70000.
+     db.employee.find({place: {$in: ['New York','Miami']},salary: {$gt: 70000}});
+
+1.58 Find employees aged 25–35 who have more than 1 project.
+     db.employee.find({age: {$gte: 25,$lte: 35},'projects.0': {$exists: true}});
+
+1.59 Find employees who have a project role containing “Manager”.
+     db.employee.find({'projects.role': {$regex: /Manager/i}});
+
+1.60 Find employees who are inactive and have no projects.
+     db.employee.find({isActive: false,'projects.0': {$exists: false}});
+
+
+
+---
+
+SECTION 13 — ADVANCED ARRAY + NESTED CONDITIONS
+
+1.61 Find employees who have a project with duration between 5 and 10 months.
+     db.employee.find({projects: {$elemMatch: {durationMonths: {$gte: 5,$lte: 10}}}});
+
+1.62 Find employees who have a skill starting with the letter R.
+     db.employee.find({skills: {$regex: /^R/i}});
+
+1.63 Find employees whose projects contain name ending with “App”.
+     db.employee.find({'projects.name': {$regex: /App$/i}});
+
+1.64 Find employees whose skills array length is greater than or equal to 4.
+     db.employee.find({skills: {$exists: true},$where: 'this.skills.length >= 4'});
+     db.employee.find({$expr: {$gte: [{$size: {$ifNull: ['$skills',[]]}},4]}});
+
+1.65 Find employees whose project role contains lowercase “developer”.
+     db.employee.find({'projects.role': {$regex: /developer/i}});
+
+
+
+---
+
+SECTION 14 — NOR, NOT & COMPLEX FILTERS
+
+1.66 Find employees who are neither active nor living in Seattle.
+     db.employee.find({$nor: [{isActive: true},{place: 'Seattle'}]});
+
+1.67 Find employees who are not older than 30.
+     db.employee.find({age: {$not: {$gt: 30}}});
+
+1.68 Find employees not working in Engineering, Data Science, or HR.
+     db.employee.find({department: {$nin: ['Engineering','Data Science','HR']}});
+
+1.69 Find employees whose name does not contain the letter “i”.
+     db.employee.find({name: {$not: {$regex: /i/i}}});
+
+1.70 Find employees whose salary is not between 70000–90000.
+     db.employee.find({salary: {$not: {$gte: 70000,$lte: 90000}}});
+
+
+
+---
+
+SECTION 15 — VERY ADVANCED QUESTIONS
+
+1.71 Find employees who have a skill that is exactly 5 characters long.
+     db.employee.find({skills: {$elemMatch: {$regex: /^.{5}$/}}});
+
+1.72 Find employees whose project duration array contains at least one number > 7.
+     db.employee.find({'projects.durationMonths': {$gt: 7}});
+
+1.73 Find employees who have at least one project where duration is even number.
+     db.employee.find({'projects.durationMonths': {$in: [2,4,6,8,10,12]}});
+
+1.74 Find employees whose second project (if exists) is less than 8 months.
+     db.employee.find({'projects.1.durationMonths': {$lt: 8}});
+
+1.75 Find employees who have any field missing in the project object.   
+     db.employee.find({projects: {$elemMatch: {
+      name: {$exists: false}
+     }}});
+
+
+
+
+:::::::: 2.update() queries ::::::::
+::UPDATE SINGLE FIELD
+2.1 Update salary of Alice Johnson
+    db.employee.updateOne({name: 'Alice Johnson'},{$set: {salary: 87000}});
+
+2.2 Increment salary 5000 to 'Daniel Kim'
+    db.employee.updateOne({name: 'Daniel Kim'},{$inc: {salary: 2000}});
+    
+2.3 Decrement salary 2000 to 'James Smith' 
+    db.employee.updateOne({name: 'James Smith'},{$inc: {salary: -2000}});
+
+
+::UPDATE MULTIPLE FIELDS
+2.4 Update place and salary of Ravi Patel
+    db.employee.updateOne({name: 'Ravi Patel'},{$set: {place: 'Delhi',salary: 80000}});
+
+
+::UPDATE MULTIPLE Documents
+2.5 Make all inactive employees active
+db.employee.updateMany({isActive: false},{$set: {isActive: true}});
+
+
+::RENAME A FIELD
+2.6 Rename field name called place to city
+    db.employee.updateMany({},{$rename: {place: 'city'}});
+
+
+::REMOVE A FIELD
+2.7 Remove city field from Daniel Kim
+    db.employee.updateOne({name: 'Daniel Kim'},{$unset: {city: ''}});
+
+
+::REPLACE ENTIRE DOCUMENT
+2.8 Replace one document - 'Alex' into another document
+    db.employee.replaceOne({name: 'Alex'},{
+      "name": "Sandra Sakaria",
+      "age": 25,
+      "position": "Dentist",
+      "salary": 99000,
+      "city": "Germany",
+      "department": "Medical",
+      "isActive": true,
+      "skills": ["Anchor", "Singer", "Badminton","Dancer"],
+      "projects": [
+      { "name": "Mobile Web", "role": "Lead Designer", "durationMonths": 7 }
+    ]
+    });
+
+
+::ARRAY UPDATES
+::PUSH SINGLE ITEM
+2.9 Add a new skill to Mohammed Khan
+    db.employee.updateOne({name: 'Mohammed Khan'},{$push: {skills: 'Angular'}});
+    
+
+
+::PUSH MULTIPLE ITEMS
+2.10 Add multiple skills to 'Daniel Kim'
+     db.employee.updateOne({name: 'Daniel Kim'},{$push: {skills: {$each: ['Anchor','English Speaker']}}});
+     
+
+
+::ADD ITEMS ONLY IF NOT PRESENT - SINGLE ITEM
+2.11 Add a new skill to Mohammed Khan 
+     db.employee.updateOne({name: 'Mohammed Khan'},{$addToSet: {skills: 'Angular'}});
+
+
+::ADD ITEMS ONLY IF NOT PRESENT - MULTIPLE ITEMS
+2.12 Add multiple skills to 'Daniel Kim'
+     db.employee.updateOne({name: 'Daniel Kim'},{$addToSet: {skills: {$each: ['Anchor','English Speaker']}}});
+
+
+::REMOVE ITEM FROM ARRAY
+2.13 Remove one skill from the employee 'Daniel Kim'
+     db.employee.updateOne({name: 'Daniel Kim'},{$pull: {skills: 'Scrum'}});
+
+
+::REMOVE MULTIPLE ITEMS FROM ARRAY
+2.14 Remove multiple skills from the employee 'Sandra Sakaria'
+     db.employee.updateOne({name: 'Sandra Sakaria'},{$pull: {skills: {$in: ['Dancer','Singer']}}});
+     db.employee.updateOne({name: 'Sandra Sakaria'},{$pullAll: {skills: ['Dancer','Singer']}});
+
+
+::UPDATE VALUE INSIDE NESTED ARRAY
+2.15 Change Sara's project role from UI Designer - Frontend Lead
+     db.employee.updateOne({name: 'Sara Lee','projects.name': 'UI Designer'},{$set: {'projects.$.role': 'Frontend Lead'}});
+     
+
+::ADD NEW PROJECT(OBJECT) ITEM 
+2.16 Add a new project(object) into an array
+     db.employee.updateOne({name: 'Emily Chen'},{$push: {projects: {name: 'Mobile App',role: 'Lead',durationMonths: 5}}});
+
+2.17 Add multiple projects(objects) into an array
+     db.employee.updateOne({name: 'Emily Chen'},{$push: {projects: {$each: [{name: 'Website',role: 'Team Head',durationMonths: 8},{name: 'E-Commerce',role: 'Assistant',durationMonths: 6}]}}});
+
+
+::PULL A PROJECT(OBJECT) BY NAME 
+2.18 Remove one project(object) from an array
+     db.employee.updateOne({name: 'Emily Chen'},{$pull: {projects: {name: 'Website'}}});
+
+2.19 Remove multiple projects(objects) from an array
+     db.employee.updateOne({name: 'Emily Chen'},{$pull: {projects: {name: {$in: ['Mobile App','E-Commerce']}}}});
+
+
+::UPDATE MANY BASED ON SALARY CONDITION
+2.20 Increase salary for all employees earning < 80k
+     db.employee.updateMany({salary: {$lt: 80000}},{$inc: {salary: 3000}});
+
+
+::ADD ONE FIELD INTO SOME DOCUMENTS
+2.21 Add new fields into some documents
+     db.employee.updateMany({name: {$in: ['Ravi Patel','Sandra Sakaria']}},{$set: {state: 'Kerala'}});
+
+
+::SET FIELD ONLY IF MISSING
+2.22 Add new field only if missing
+     db.employee.updateMany({lang: {$exists: false}},{$set: {lang: 'English'}});
+
+2.23 Add value only if fields are 'null'
+     db.employee.updateMany({state: {$exists: null}},{$set: {state: 'Kerala'}})
+
+
+::ARRAY POSITION UPDATE
+2.24 Increase duration of first project for James Smith
+     db.employee.updateOne({name: 'James Smith'},{$inc: {'projects.0.durationMonths': 2}});
+
+
+::UPSERT(INSERT IF NOT EXIST)
+2.25 Insert a document only if it does not exist (using upsert)
+db.employee.updateOne({name: 'Amitha Roy'},{$set: {age: 25,position: 'Accountant',salary: 40000,department: 'BCOM'}},{upsert: true})

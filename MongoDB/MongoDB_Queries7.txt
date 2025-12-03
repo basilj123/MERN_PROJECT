@@ -1,0 +1,4 @@
+:: INDEXES
+createIndex()
+db.employee.createIndex({name: 1})
+

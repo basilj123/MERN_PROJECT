@@ -1,0 +1,493 @@
+* Create and Switch to Database
+use Database5
+
+* Create Collections
+db.createCollection('employee')
+
+db.employee.insertMany([
+  {
+    "name": "Ravi Patel",
+    "age": 34,
+    "position": "Data Analyst",
+    "salary": 78000,
+    "place": "San Francisco",
+    "department": "Data Science",
+    "isActive": false,
+    "skills": ["Python", "SQL", "Tableau"],
+    "projects": [
+      { "name": "Sales Dashboard", "role": "Data Visualizer", "durationMonths": 5 }
+    ]
+  },
+  {
+    "name": "Sara Lee",
+    "age": 26,
+    "position": "Frontend Developer",
+    "salary": 72000,
+    "place": "Miami",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["HTML", "CSS", "React", "JavaScript"],
+    "projects": [
+      { "name": "Website Revamp", "role": "UI Designer", "durationMonths": 4 }
+    ]
+  },
+  {
+    "name": "Daniel Kim",
+    "age": 41,
+    "position": "Project Manager",
+    "salary": 105000,
+    "place": "Seattle",
+    "department": "Management",
+    "isActive": true,
+    "skills": ["Agile", "Scrum", "Leadership"],
+    "projects": [
+      { "name": "Infrastructure Upgrade", "role": "Manager", "durationMonths": 10 }
+    ]
+  },
+  {
+    "name": "Linda Gomez",
+    "age": 38,
+    "position": "HR Specialist",
+    "salary": 68000,
+    "place": "New York",
+    "department": "HR",
+    "isActive": false,
+    "skills": ["Recruiting", "Onboarding", "Communication"],
+    "projects": []
+  },
+  {
+    "name": "Mohammed Khan",
+    "age": 30,
+    "position": "Backend Developer",
+    "salary": 88000,
+    "place": "Houston",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["Node.js", "Express", "MongoDB"],
+    "projects": [
+      { "name": "API Gateway", "role": "Lead Developer", "durationMonths": 8 }
+    ]
+  },
+  {
+    "name": "Emily Chen",
+    "age": 24,
+    "position": "UX Designer",
+    "salary": 67000,
+    "place": "Boston",
+    "department": "Design",
+    "isActive": true,
+    "skills": ["Figma", "Sketch", "User Research"],
+    "projects": [
+      { "name": "Mobile App UX", "role": "Designer", "durationMonths": 6 }
+    ]
+  },
+  {
+    "name": "James Smith",
+    "age": 45,
+    "position": "DevOps Engineer",
+    "salary": 97000,
+    "place": "Austin",
+    "department": "IT",
+    "isActive": false,
+    "skills": ["Docker", "Kubernetes", "AWS"],
+    "projects": [
+      { "name": "CI/CD Pipeline", "role": "DevOps Lead", "durationMonths": 12 }
+    ]
+  },
+  {
+    "name": "Alice Johnson",
+    "age": 29,
+    "position": "Software Engineer",
+    "salary": 85000,
+    "place": "New York",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["JavaScript", "Node.js", "MongoDB"],
+    "projects": [
+      { "name": "CRM App", "role": "Backend", "durationMonths": 6 },
+      { "name": "E-commerce Site", "role": "Full Stack", "durationMonths": 9 }
+    ]
+  }
+]);
+
+--------------- QUERY QUESTIONS ----------------
+:::::::: 1.find() queries ::::::::
+
+::BASIC QUERIES
+1.Find all employees
+db.emplyee.find().pretty()
+
+2.Find employee by exact name -(Alice Johnson)
+db.employee.find({name: 'Alice Johnson'})
+
+3.find employees by place -(New York)
+db.employee.find({place: 'New York'})
+
+4.Find employees who are active
+db.employee.find({isActive: true})
+
+
+::COMPARISON QUERIES
+5.Find employees with salary > 80,000
+db.employee.find({salary: {$gt: 80000}})
+
+6.Find employees with salary < 70,000
+db.employee.find({salary: {$lt: 70000}})
+
+7.Find employees with salary between 70k and 90k
+db.employee.find({salary: {$gte: 70000,$lte: 90000}})
+
+
+::LOGICAL QUERIES($and,$or,$nor,$not)
+8.Employees in Engineering AND active
+db.employee.find({$and: [{department: 'Engineering'},{isActive: true}]})
+
+9.Employees in Engineering OR Management
+db.employee.find({$or: [{department: 'Engineering'},{department: 'Management'}]})
+
+Employees not in engineering & salary not greater than 70000
+db.employee.find({$nor: [{department: 'Engineering'},{salary: {$gt: 70000}}]})
+
+Employees whose age not greater than 35
+db.employee.find({age: {$not: {$gt: 30}}})
+
+10.Employees NOT active
+db.employee.find({isActive: {$ne: true}})
+db.employee.find({isActive: false})
+
+::ARRAY QUERIES
+Find employees who have the skill 'MongoDB'
+db.employee.find({skills: 'MongoDB'})
+
+Find employees who know both Node.js AND MongoDB
+db.employee.find({skills: {$all: ['Node.js','MongoDB']}})
+
+Find employees with skill array size 3
+db.employee.find({skills: {$size: 3}})
+
+Find employees with skill array size is < 3f
+db.employee.find({$expr: {$gt: [{$size: '$skills'},3]}})
+
+
+::NESTED ARRAY QUERIES
+Employees with atleast 1 project
+db.employee.find({$expr: {$gte: [{$size: '$projects'},1]}})
+db.employee.find({projects: {$not: {$size: 0}}})
+
+Employees with 0 projects
+db.employee.find({$expr: {$eq: [{$size: '$projects'},0]}})
+db.employee.find({projects: {$size: 0}})
+
+Find employees who worked on project named 'CRM App'
+db.employee.find({'projects.name': 'CRM App'})
+
+Find employees with project duration > 6 months
+db.employee.find({'projects.durationMonths': {$gt: 6}})
+
+
+::REGEX SEARCH
+Name starts with R
+db.employee.find({name: /^R/})
+
+Name Contains 'son'
+db.employee.find({name: /son/i})
+
+
+::PROJECTION QUERIES
+Show only name & salary
+db.employee.find({},{_id: 0,name: 1,salary: 1})
+
+Show employee name & their total skills 
+db.employee.find({},{_id: 0,name: 1,totalSkills: {$size: '$skills'}})
+
+
+::SORTING 
+Sort employees by salary ascending
+db.employee.find().sort({salary: 1})
+
+Sort employees by salary descending
+db.employee.find().sort({salary: -1})
+
+
+::LIMIT & SKIP
+Get only first 3 employees
+db.employee.find().limit(3)
+
+Skip first 2 employees
+db.employee.find().skip(2)
+
+
+::COUNT
+db.employee.find({department: 'Engineering'}).count()
+
+
+::IN/NIN
+Employees in New York,Seattle,Houston
+db.employee.find({place: {$in: ['New York','Seattle','Houston']}})
+
+Employees exclude 'Engineering' & 'Management'
+db.employee.find({department: {$nin: ['Engineering','Management']}}) - $nin needs an array
+db.employee.find({department: {$ne: 'Engineering'}}) - $ne does not take arrays & only check 1 item
+
+
+::ALL
+db.employee.find({skills: {$all: ['JavaScript','MongoDB']}})
+
+
+::FIND BY MULTIPLE CONDITIONS
+Active engineers with salary > 80k
+db.employee.find({department: 'Engineering',isActive: true,salary: {$gt: 80000}})
+
+
+::FIND INSIDE ARRAY OF OBJECTS
+Find employees who worked as 'Backend'
+db.employee.find({'projects.role': 'Backend'})
+
+
+::$elemMatch
+Used when array contains objects OR when you need multiple conditions on the same array element
+Find employees with a project of duration > 5 AND role = 'Backend'
+db.employee.find({projects: {$elemMatch: {durationMonths: {$gt: 5},role: 'Backend'}}})
+
+
+
+
+:::::::: 2.update() queries ::::::::
+::UPDATE SINGLE FIELD
+2.1 Update salary of Alice Johnson
+db.employee.updateOne({name: 'Alice Johnson'},{$set: {salary: 90000}})
+
+2.2 Increment salary 5000 to Basil Jose 
+db.employee.updateOne({name: 'Basil Jose'},{$inc: {salary: 5000}})
+
+2.3 Decrement salary 2000 to 'James Smith' 
+db.employee.updateOne({name: 'Basil Jose'},{$inc: {salary: -2000}})
+
+
+::UPDATE MULTIPLE FIELDS
+2.4 Update place and salary of Ravi Patel
+db.employee.updateOne({name: 'Ravi Patel'},{$set: {place: 'Los Angeles',salary: 80000}})
+
+
+::UPDATE MULTIPLE Documents
+2.5 Make all inactive employees active
+db.employee.updateMany({isActive: false},{$set: {isActive: true}})
+
+
+::RENAME A FIELD
+2.6 Rename field name called place to city
+db.employee.updateMany({},{$rename: {place: 'city'}})
+
+
+::REMOVE A FIELD
+2.7 Remove city field from Daniel Kim
+db.employee.updateOne({name: 'Daniel Kim'},{$unset: {city: ''}})
+
+
+::REPLACE ENTIRE DOCUMENT
+2.8 Replace one document - 'Sandra Sakaria' into another document
+db.employee.replaceOne({name: 'Sandra Sakaria'},
+{
+    name: 'Anju Sabu',
+    age: 25,
+    position: 'Pharmist',
+    salary: 35000,
+    department: 'Medical',
+    isActive: true,
+    skills: [],
+    projects: [],
+    city: 'Kolenchery'
+}
+);
+
+
+::ARRAY UPDATES
+::PUSH SINGLE ITEM
+2.9 Add a new skill to Mohammed Khan
+db.employee.updateOne({name: 'Mohammed Khan'},{$push: {skills: 'JavaScript'}})
+
+
+::PUSH MULTIPLE ITEMS
+2.10 Add multiple skills to Anju Sabu
+db.employee.updateOne({name: 'Anju Sabu'},{$push: {skills: {$each: ['Anchor','Dancer']}}})
+
+
+::ADD ITEMS ONLY IF NOT PRESENT - SINGLE ITEM
+2.11 Add a new skill to Mohammed Khan 
+db.employee.updateOne({name: 'Mohammed Khan'},{$addToSet: {skills: 'Tailwind'}})
+
+
+::ADD ITEMS ONLY IF NOT PRESENT - MULTIPLE ITEMS
+2.12 Add multiple skills to Anju Sabu
+db.employee.updateOne({name: 'Anju Sabu'},{$addToSet: {skills: {$each: ['Singer','Anchor','Gymnastic','Influencer']}}})
+
+ 
+::REMOVE ITEM FROM ARRAY
+2.13 Remove one skill from the employee 'Basil Jose'
+db.employee.updateOne({name: 'Basil Jose'},{$pull: {skills: 'GIT'}})
+
+
+::REMOVE MULTIPLE ITEMS FROM ARRAY
+2.14 Remove multiple skills from the employee 'Anju sabu'
+db.employee.updateOne({name: 'Anju Sabu'},{$pull: {skills: {$in: ['Gymnastic','Influencer']}}})
+db.employee.updateOne({name: 'Anju Sabu'},{$pullAll: {skills: ['Gymnastic','Influencer']}})
+
+
+::UPDATE VALUE INSIDE NESTED ARRAY
+2.15 Change Sara's project role from UI Designer - Frontend Lead
+db.employee.updateOne({name: 'Sara Lee','projects.name': 'Website Revamp'},{$set: {'projects.$.role': 'Frontend Leader'}})
+
+
+::ADD NEW PROJECT(OBJECT) ITEM 
+2.16 Add a new project(object) into an array
+db.employee.updateOne({name: 'Anju Sabu'},{$push: {projects: {name: 'Static App',role: 'Developer',durationMonths: 7}}})
+
+2.17 Add multiple projects(objects) into an array
+db.employee.updateOne({name: 'Anju Sabu'},{$push: {projects: {$each: [{name: 'Website',role: 'Team Head',durationMonths: 8},{name: 'E-Commerce',role: 'Assistant',durationMonths: 6}]}}})
+
+
+::PULL A PROJECT(OBJECT) BY NAME 
+2.18 Remove one project(object) from an array
+db.employee.updateOne({name: 'Anju Sabu'},{$pull: {projects: {name: 'Static App'}}})
+
+2.19 Remove multiple projects(objects) from an array
+db.employee.updateOne({name: 'Anju Sabu'},{$pull: {projects: {name: {$in: ['Website','E-Commerce']}}}})
+
+
+::UPDATE MANY BASED ON SALARY CONDITION
+2.20 Increase salary for all employees earning < 80k
+db.employee.updateMany({salary: {$lt: 80000}},{$inc: {salary: 3000}}) 
+
+
+::ADD ONE FIELD INTO SOME DOCUMENTS
+2.21 Add new fields into some documents
+db.employee.updateMany({name: {$in: ['Anju Sabu','Basil Jose','Rosiya Ann Joseph']}},{$set: {state: 'null'}})
+
+
+::SET FIELD ONLY IF MISSING
+2.22 Add new field only if missing
+db.employee.updateMany({nationality: {$exists: false}},{$set: {nationality: 'Indian'}})
+
+2.23 Add value only if fields are 'null'
+db.employee.updateMany({state: {$exists: null}},{$set: {state: 'Kerala'}})
+
+
+::ARRAY POSITION UPDATE
+2.24 Increase duration of first project for James Smith
+db.employee.updateMany({name: 'James Smith'},{$inc: {'projects.0.durationMonths': 2}})
+
+
+::UPSERT(INSERT IF NOT EXIST)
+2.25 Insert a document only if it does not exist (using upsert)
+db.employee.updateOne({name: 'Amitha Roy'},{$set: {age: 25,position: 'Accountant',salary: 40000,department: 'BCOM'}},{upsert: true})
+
+
+
+
+:::::::: 3.insert() queries ::::::::
+::INSERT SINGLE DOCUMENT INTO COLLECTION
+3.1 Insert new document into the Collection
+db.employee.insertOne(
+  {
+    name: 'Zandra Sakaria',
+    age: 26,
+    position: 'Dentist',
+    salary: 60000,
+    department: 'MBBS',
+    isActive: false,
+    skills: ['Badminton','Dancer'],
+    projects: [],
+    city: 'Piravom'
+  }
+)
+
+
+::INSERT MULTIPLE DOCUMENTS INTO COLLECTION
+3.2 Insert multiple documents into the Collection
+db.employee.insertMany([
+  {
+    name: 'Avani Shankar',
+    age: 23,
+    position: 'Dentist',
+    salary: 40000,
+    department: 'MBBS',
+    isActive: true,
+    skills: ['Dancer','Anchor'],
+    projects: [],
+    city: 'Pala'
+  },
+  {
+    name: 'Akshai',
+    age: 25,
+    position: 'Quality Controller',
+    salary: 30000,
+    department: 'MSC',
+    isActive: false,
+    skills: ['Gymnastic','Singer'],
+    projects: [],
+    city: 'Pampakuda'
+  }
+])
+
+
+::INSERT A DOCUMENT WITH YOUR OWN _id
+3.3 Insert a document with your own _id
+db.employee.insertOne(
+  {
+    _id: 1001,
+    name: 'Anandhu Santhosh',
+    age: 24,
+    position: 'Adviser',
+    department: 'MCOM ',
+    salary: 35000
+  }
+) 
+
+3.4 What happens if you insert another document with the same _id?
+db.employee.insertOne(
+  {
+    _id: 1001,
+    name: 'Anupama',
+    age: 20,
+    position: 'HR'
+  }
+)
+Error: Duplicate key - _id must be unique
+
+
+::INSERT A DOCUMENT WITH NESTED FIELDS
+3.5 Insert a document with nested fields
+db.employee.insertOne(
+  {
+    name: 'Ashwin',
+    age: 27,
+    address: {
+      place: 'Piravom',
+      pincode: 686660
+    }
+  }
+)
+
+
+::INSERT A DOCUMENT WITH AN ARRAY
+3.6 Insert a document with an array
+db.employee.insertOne(
+  {
+    name: 'Abhishek',
+    skills: ['Actor','Singer','Anchor']
+  }
+)
+
+
+::INSERT WITH WRITE CONCERN (acknowledgement level)
+3.7 Insert a document with write CONCERN
+db.employee.insertOne(
+  {
+    name: 'Adithyan',
+    age: 26,
+    position: 'Professor',
+    salary: 30000,
+    department: 'MCOM'
+  },
+  {writeConcern: {W: 1}}
+)

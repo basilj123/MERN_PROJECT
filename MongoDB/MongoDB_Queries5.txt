@@ -1,0 +1,83 @@
+:::::::: 4.MongoDB Aggregation FrameWork ::::::::
+:: 4.1 $match
+4.1.1 - Find all users whose age is greater than 30
+        db.employee.aggregate([{$match: {age: {$gt: 30}}}])
+
+4.1.2 - Find all employees from 'IT' department
+        db.employee.aggregate([{$match: {department: 'IT'}}])
+    
+4.1.3 - Find salary between 30000 and 50000
+        db.employee.aggregate([{$match: {salary: {$gte: 30000,$lte: 50000}}}])
+
+4.1.4 - Find active users
+        db.employee.aggregate([{$match: {isActive: true}}])
+
+4.1.5 - Find users who live in either Kochi,Kolenchery or New York
+        db.employee.aggregate([{$match: {city: {$in: ['Kochi','Kolenchery','New York']}}}])
+
+
+
+:: 4.2 $group
+4.2.1 - Count number of employees in each department
+        db.employee.aggregate([{$group: {_id: '$department',totalEmployees: {$sum: 1}}}])
+
+4.2.2 - Total salary spent in each department
+        db.employee.aggregate([{$group: {_id: '$department',totalSalary: {$sum: '$salary'}}}])
+
+4.2.3 - Average age of users
+        db.employee.aggregate([{$group: {_id: 'users',avgAge: {$avg: '$age'}}}])
+
+4.2.4 - Get max salary
+        db.employee.aggregate([{$group: {_id: null,maxSalary: {$max: '$salary'}}}])
+
+4.2.5 - Group city  and collect all names
+        db.employee.aggregate([{$group: {_id: '$city',names: {$push: '$name'}}}])
+
+
+
+:: 4.3 $project
+4.3.1 - Show only name and age
+        db.employee.aggregate([{$project: {_id: 0,name: 1,age: 1}}])
+
+4.3.2 - Concatinate 2 field value (name + department)
+        db.employee.aggregate([{$project: {_id: 0,details: {$concat: ['$name',' - ','$department']}}}])
+
+4.3.3 - Convert salary(number) into string
+        db.employee.aggregate([{$project: {_id: 0,string: {$toString: '$salary'}}}])
+
+4.3.4 - Covert salary(string) into number
+        db.employee.aggregate([{$project: {_id: 0,number: {$toInt: '$salary'}}}]) - Actually salary value is integer.but i don't have any number as string.
+
+4.3.5 - Show only first 3 letters of name
+        db.employee.aggregate([{$project: {_id: 0,short: {$substr: ['$name',0,3]}}}])
+
+4.3.6 - Get only array length of field 'skills'       
+        db.employee.aggregate([{$match: {skills: {$exists: false}}},{$project: {_id: 0,name: 1,length: {$size: '$skills'}}}])
+
+        why i use $match method because some documents doesn't have 'skills' field,so $size throw an error.
+        if i want to get the array length,then i must use $match to get the values that only exist the field 'skills'.
+        $size use to count the items of an array,so we only use the operator $size in arrays
+ 
+        Best methods:
+        1.Using ifNull - safe for missing fields
+        db.employee.aggregate([{$project: {_id: 0,name: 1,length: {$size: {$ifNull: ['$skills',[]]}}}}])
+
+        2.Using $isArray - also safe
+        db.employee.aggregate([{$project: {_id: 0,name: 1,length: {$cond: [{$isArray: '$skills'},{$size: '$skills'},0]}}}])
+
+
+
+:: 4.4 $sort
+4.4.1 - Sort users by age (ascending)
+        db.employee.aggregate([{$sort: {age: 1}}])
+
+4.4.2 - Sort users by salary (descending)
+        db.employee.aggregate([{$sort: {salary: -1}}])
+
+4.4.3 - Sort by multiple fields (age & name)
+        db.employee.aggregate([{$sort: {age: 1,name: 1}}])
+
+4.4.4 - Sort cities alphabetically
+        db.employee.aggregate([{$sort: {city: 1}}])  - Documents without city field(any fields) will come first automatically
+
+

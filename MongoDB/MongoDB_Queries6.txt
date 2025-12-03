@@ -1,0 +1,820 @@
+use Database5
+
+//1.users collection
+db.users.insertMany([
+  {
+    _id: 1,
+    name: "Basil",
+    email: "basil@gmail.com",
+    hobbies: ["reading", "coding", "movies"],  
+    address: {                                  
+      city: "Kochi",
+      pin: 682030
+    }
+  },
+  {
+    _id: 2,
+    name: "Arjun",
+    email: "arjun@gmail.com",
+    hobbies: ["football", "music"],
+    address: {
+      city: "Muvattupuzha",
+      pin: 686661
+    }
+  },
+  {
+    _id: 3,
+    name: "Megha",
+    email: "megha@gmail.com",
+    hobbies: ["travel", "drawing"],
+    address: {
+      city: "Kothamangalam",
+      pin: 686666
+    }
+  }
+])
+
+
+//2.orders collection
+db.orders.insertMany([
+  {
+    _id: 101,
+    userId: 1,
+    items: ["iPhone 15", "Case"],               
+    steps: [                                    
+      { step: "Packed", time: "10:00 AM" },
+      { step: "Shipped", time: "12:30 PM" }
+    ],
+    total: 122000
+  },
+  {
+    _id: 102,
+    userId: 1,
+    items: ["AirPods Pro"],
+    steps: [
+      { step: "Packed", time: "09:00 AM" }
+    ],
+    total: 25000
+  },
+  {
+    _id: 103,
+    userId: 2,
+    items: ["Samsung S23"],
+    steps: [
+      { step: "Packed", time: "11:00 AM" },
+      { step: "Shipped", time: "02:00 PM" }
+    ],
+    total: 85000
+  }
+])
+
+
+3.employee collection
+db.emp.insertMany([
+  {
+    "_id": 1,
+    "name": "Arjun",
+    "departmentId": 101,
+    "skills": ["Node", "MongoDB"]
+  },
+  {
+    "_id": 2,
+    "name": "Meera",
+    "departmentId": 102,
+    "skills": ["React"]
+  },
+  {
+    "_id": 3,
+    "name": "Rahul",
+    "departmentId": 103,
+    "skills": ["Node", "Express", "MongoDB"]
+  }
+])
+
+
+4.department collection
+db.department.insertMany([
+  { "_id": 101, "departmentName": "Backend", "location": "Kochi" },
+  { "_id": 102, "departmentName": "Frontend", "location": "Chennai" },
+  { "_id": 103, "departmentName": "DevOps", "location": "Bangalore" }
+])
+
+
+5.customer collection
+db.customer.insertMany([
+  {
+    _id: 1,
+    customerName: "Arun",
+    items: [
+      { product: "Laptop", price: 50000, qty: 1 },
+      { product: "Mouse", price: 800, qty: 2 }
+    ],
+    status: "delivered",
+    coupons: ["NEW10", "FESTIVE5"]
+  },
+
+  {
+    _id: 2,
+    customerName: "Maya",
+    items: [
+      { product: "Phone", price: 20000, qty: 1 },
+      { product: "Case", price: 300, qty: 1 },
+      { product: "Charger", price: 1500, qty: 1 }
+    ],
+    status: "pending",
+    coupons: []
+  },
+
+  {
+    _id: 3,
+    customerName: "Ravi",
+    items: [],
+    status: "delivered"
+  },
+
+  {
+    _id: 4,
+    customerName: "Jishnu",
+    status: "cancelled",
+    coupons: ["NEW10"]
+  }
+])
+
+
+6.device collection
+db.device.insertMany([
+  { "_id": 1, "name": "Laptop", "price": 50000, "category": "Electronics", "ratings": [4, 5, 5] },
+  { "_id": 2, "name": "Phone", "price": 30000, "category": "Electronics", "ratings": [5, 4] },
+  { "_id": 3, "name": "Book", "price": 400, "category": "Stationery", "ratings": [] },
+  { "_id": 4, "name": "Headphones", "price": 2000, "category": "Electronics", "ratings": [3, 4] }
+]);
+
+
+7.brands collection
+db.brands.insertMany([
+  { "name": "Shirt", "category": "Clothes", "price": 500, "brand": "Nike" },
+  { "name": "Shoes", "category": "Footwear", "price": 2000, "brand": "Adidas" },
+  { "name": "Cap", "category": "Clothes", "price": 300, "brand": "Puma" },
+  { "name": "Watch", "category": "Accessories", "price": 3000, "brand": "Fossil" },
+  { "name": "Bag", "category": "Accessories", "price": 1500, "brand": "Nike" }
+])
+
+
+db.emp.aggregate([{$lookup:
+{
+  from: 'department',
+  localField: 'departmentId',
+  foreignField: '_id',
+  as: 'dept'
+}
+},
+{$unwind: '$dept'},
+{$project: {_id: 0,name: 1,location: '$dept.location'}}
+]);
+
+
+:: 4.5 $lookup
+* employee Collections
+* department Collections
+4.5.1 - Get each employee with their department details
+        db.emp.aggregate([{$lookup:
+        {
+            from: 'department',
+            localField: 'departmentId',
+            foreignField: '_id',
+            as: 'deptInfo'
+        }
+        }])
+    
+4.5.2 - Get employee Name + department Name only
+        db.emp.aggregate([{$lookup:
+        {
+            from: 'department',
+            localField: 'departmentId',
+            foreignField: '_id',
+            as: 'dept'
+        }
+        },
+        {$unwind: '$dept'},
+        {$project: {_id: 0,name: 1,departmentName: '$dept.departmentName'}}
+        ])
+
+4.5.3 - Get only employees who work in 'Backend' department
+        db.emp.aggregate([{$lookup:
+        {
+            from: 'department',
+            localField: 'departmentId',
+            foreignField: '_id',
+            as: 'dept'
+        }
+        },
+        {$unwind: '$dept'},
+        {$match: {'dept.departmentName': 'Backend'}}
+        ])
+
+4.5.4 - Count how many employees per department
+        db.emp.aggregate([{$lookup:
+        {
+            from: 'department',
+            localField: 'departmentId',
+            foreignField: '_id',
+            as: 'dept'
+        }
+        },
+        {$unwind: '$dept'},
+        {$group: {_id: '$dept.departmentName',totalEmployees: {$sum: 1}}}
+        ])
+
+4.5.5 - Show department with employees (reverse lookup)
+        db.department.aggregate([{$lookup:
+        {
+            from: 'emp',
+            localField: '_id',
+            foreignField: 'departmentId',
+            as: 'employeeList'
+        }
+        }])
+
+4.5.6 - List departments that have more than 1 employee
+        db.department.aggregate([{$lookup:
+        {
+            from: 'emp',
+            localField: '_id',
+            foreignField: 'departmentId',
+            as: 'employeeList'
+        }
+        },
+        {$match: {'employeeList.1': {$exists: true}}}
+        ])
+
+4.5.7 - Get empoloyees with department location only
+        db.emp.aggregate([{$lookup:
+        {
+            from: 'department',
+            localField: 'departmentId',
+            foreignField: '_id',
+            as: 'dept'
+        }
+        },
+        {$unwind: '$dept'},
+        {$project: {_id: 0,name: 1,location: '$dept.location'}}
+        ])
+        
+4.5.8 - Get employees who work in Bangalore
+        db.emp.aggregate([{$lookup:
+        {
+            from: 'department',
+            localField: 'departmentId',
+            foreignField: '_id',
+            as: 'dept'
+        }
+        },
+        {$unwind: '$dept'},
+        {$match: {'dept.location': 'Bangalore'}}
+        ])
+
+
+
+:: 4.6 $unwind
+4.6.1 - Convert projects array into multiple documents
+        db.employee.aggregate([{$unwind: '$projects'}]) - if array is empty,we couldn't get the document
+
+4.6.2 - unwind with empty array allowed
+        db.employee.aggregate([{$unwind: {path: '$projects',preserveNullAndEmptyArrays: true}}])
+
+4.6.3 - Unwind items then group total price
+        db.customer.aggregate([
+          {$unwind: '$items'},
+          {$group: {_id: '$customerName',totalPrice: {$sum: '$items.price'}}}
+          ])
+
+4.6.4 - Unwind nested field
+
+
+
+
+:: 4.7 $addFields (Add new Fields)
+4.7.1 - Adds extra fields without removing existing ones
+        Add average rating
+        db.device.aggregate([{$addFields: {averageRating: {$avg:'$ratings'}}}])
+        db.device.aggregate([{$addFields: {review: 'bad'}}])
+
+
+
+:: 4.8 $set (same as $addFields)
+4.8.1 - Add Discounted price in every device
+        Modern and preferred,works exactly the same
+        db.device.aggregate([{$set: {discountedPrice: {$multiply: ['$price',0.9]}}}])
+      
+
+
+:: 4.9 $unset (Remove a Field)
+4.9.1 - Remove field 'category'
+        db.device.aggregate([{$unset: 'category'}])
+
+
+
+:: 4.10 $limit (Limit the number of documents)
+4.10.1 - Limit first 2 documents
+         db.device.aggregate([{$limit: 2}])
+
+
+
+:: 4.11 $skip (skip some documents)
+4.11.1 - Skip first 2 documents
+         db.device.aggregate([{$skip: 2}])
+        
+4.11.2 - Show only 3rd document (skip 1st,2nd & 4th)
+         db.device.aggregate([{$skip: 2},{$limit: 1}])
+
+
+
+:: 4.12 $count (count documents)
+4.12.1 - Count the electronics documents
+         db.device.aggregate([{$match: {category: 'Electronics'}},{$count: 'totalElectronics'}])
+
+
+
+:: 4.13 $sample (Random documents)
+4.13.1 - Show some random documents in the collection
+         db.device.aggregate([{$sample: {size: 2}}])
+
+
+
+:: 4.14 $facet (Multiple aggregation pipelines at the same time & return their results together in one output)
+4.13.1 - Get products less than 30000 & higher than 30000 & total products
+         db.device.aggregate([{$facet: {
+         cheapProducts: [{$match: {price: {$lt: 30000}}}],
+         highRated: [{$match: {price: {$gte: 30000}}}],
+         totalCount: [{$count: 'count'}]
+         }}])
+
+4.13.2 - Get all nike products AND also get the count of all categories in one QUERY
+         db.brands.aggregate([{$facet: {
+          nikeProducts: [{$match: {brand: 'Nike'}}],
+          prodCategories: [{$group: {_id: '$category',totalCount: {$sum: 1}}}]
+         }}])
+
+4.13.3 - Get all products where price > 1000 AND count of all brands
+        db.brands.aggregate([{$facet: {
+          productRange: [{$match: {price: {$gt: 1000}}}],
+          brandCounts: [{$group: {_id: '$brand',totalCounts: {$sum: 1}}}]
+        }}])
+
+db.brands.aggregate([{$facet: {
+  clothes: [{$match: {category: 'Clothes'}}],
+  total: [{$match: {category: 'Clothes'}},{$group: {_id: '$category',total: {$sum: 1}}}],
+}}])
+
+
+4.13.4 - Get all clothes category products AND total number of products
+         db.brands.aggregate([{$facet: {
+          clothesCat: [{$match: {category: 'Clothes'}}],
+          totalProducts: [{$count: 'count'}]
+         }}])
+
+4.13.5 - Get products whose category = 'Accessories' AND group all products by brand & count
+         db.brands.aggregate([{$facet: {
+          productsCat: [{$match: {category: 'Accessories'}}],
+          brands: [{$group: {_id: '$brand',totalCount: {$sum: 1}}}]
+         }}])
+
+4.13.6 - Get minimum,maximum and average price & all products with category = 'Footwear'
+         db.brands.aggregate([{$facet: {
+          stats: [{$group: 
+          {_id: null,
+          Min: {$min: '$price'},
+          Max: {$max: '$price'},
+          average: {$avg: '$price'}
+          }}],
+          footwearCat: [{$match: {category: 'Footwear'}}]
+         }}])
+
+4.13.7 - Get all products sorted by price descending AND count how many products have price < 1000
+         db.brands.aggregate([{$facet: {
+          sort: [{$sort: {price: -1}}],
+          counts: [{$match: {price: {$lt: 1000}}},{$count: 'totalProducts'}]
+         }}])
+
+
+:: 4.15 $bucket (Group values by ranges)
+db.score.insertMany([
+  {name: 'Basil', score: 35},
+  {name: 'Rosiya', score: 55},
+  {name: 'Amitha', score: 72},
+  {name: 'Sandra', score: 88},
+  {name: 'Anju', score: 95}
+]);
+
+4.15.1 - Group students by score
+         0 - 50
+         50 - 75
+         75 - 100
+
+         db.score.aggregate([{$bucket: {
+          groupBy: '$score',
+          boundaries: [0,50,75,100],
+          default: 'other',
+          output: {
+            count: {$sum:  1},
+            names: {$push: '$name'}
+          }
+         }}]);
+
+4.15.2 - Group students into buckets
+         0 - 60
+         60 - 80
+         80 - 100
+
+         db.score.aggregate([{$bucket: {
+          groupBy: '$score',
+          boundaries: [0,60,80,100],
+          default: 'other',
+          output: {
+            count: {$sum: 1}
+          }
+         }}])
+
+4.15.3 - Group students by:
+         0 - 40
+         40 - 70
+         70 - 100
+         include output:
+         * total students
+         * list of names
+         * average score
+
+         db.score.aggregate([{$bucket: {
+          groupBy: '$score',
+          boundaries: [0,40,70,100],
+          default: 'other',
+          output: {
+            total: {$sum: 1},
+            names: {$push: '$name'},
+            avgScore: {$avg: '$score'}
+          }
+         }}]);
+
+4.15.4 - Create buckets:
+         0 - 50
+         50 - 100
+         include outputs: 
+         * count
+         * highest score in each bucket
+
+         db.score.aggregate([{$bucket: {
+          groupBy: '$score',
+          boundaries: [0,50,100],
+          default: 'other',
+          output: {
+            count: {$sum: 1},
+            highScore: {$max: '$score'}
+          }
+         }}])
+         
+4.15.5 - Bucket by:
+         0 - 30
+         30 - 70
+         70 - 100
+         * Put all out of range students in 'others'
+
+         db.score.aggregate([{$bucket: {
+          groupBy: '$score',
+          boundaries: [0,30,70,100],
+          default: 'others',
+          output: {
+            count: {$sum: 1}
+          }
+         }}]);
+
+4.15.6 - Bucket students by:
+         0 - 50
+         50 - 75
+         75 - 100
+
+         * sort buckets by count(descending)
+
+         db.score.aggregate([{$bucket: {
+          groupBy: '$score',
+          boundaries: [0,50,75,100],
+          default: 'other',
+          output: {
+           count: {$sum: 1}
+          }
+         }},
+         {
+          $sort: {count: -1}
+         }]);
+
+
+
+:: 4.16 $bucketAuto ($bucketAuto is similar to $bucket,but MongoDB automatically decides the bucket boundaries
+        based on data)
+4.16.1 - Divide students into 3 automatic score ranges
+
+         db.score.aggregate([{$bucketAuto: {
+          groupBy: '$score',
+          buckets: 3,
+          output: {
+            count: {$sum: 1},
+            names: {$push: '$name'}
+          }
+         }}])
+
+4.16.2 - Group students into 2 buckets based on score
+         * count
+         * list of names
+
+         db.score.aggregate([{$bucketAuto: {
+          groupBy: '$score',
+          buckets: 2,
+          output: {
+            count: {$sum: 1},
+            names: {$push: '$name'}
+          }
+         }}]);
+
+4.16.3 - Group students into 4 buckets based on score
+         * total
+         * min score in each bucket
+         * max score in each bucket
+
+         db.score.aggregate([{$bucketAuto: {
+          groupBy: '$score',
+          buckets: 4,
+          output: {
+            total: {$sum: 1},
+            minScore: {$min: '$score'},
+            maxScore: {$max: '$score'}
+          }
+         }}]);
+
+4.16.4 - Group students into 3 buckets
+         * number of students
+         * average score
+
+         db.score.aggregate([{$bucketAuto: {
+          groupBy: '$score',
+          buckets: 3,
+          output: {
+            total: {$sum: 1},
+            avgScore: {$avg: '$score'}
+          }
+         }}]);
+
+4.16.5 - group students into 2 buckets,but 
+         * highest score(max)
+         * lowest score(min)
+
+         db.score.aggregate([{$bucketAuto: {
+          groupBy: '$score',
+          buckets: 2,
+          output: {
+            highScore: {$max: '$score'},
+            lowScore: {$min: '$score'}
+          }
+         }}]);
+
+4.16.6 - Create 3 buckets,sort the buckets by min score
+         
+         db.score.aggregate([{$bucketAuto: {
+          groupBy: '$score',
+          buckets: 3
+         }},
+         {$sort: {'_id.min': -1}}]);
+
+
+
+:: 4.17 $sortByCount (It counts how many times each value appears in a field & automatically sorts the results 
+        from highest to lowest count)
+        You do not need to write $group or $sort manually.MongoDB will group + count + sort for you
+
+4.17.1 - Count how many users are in each city
+db.district.insertMany([
+  {name: 'A',city: 'Kochi'},
+  {name: 'B',city: 'Kollam'},
+  {name: 'C',city: 'Kochi'},
+  {name: 'D',city: 'Kochi'},
+  {name: 'E',city: 'Thrissur'},
+  {name: 'F',city: 'Kollam'}
+]);
+
+      db.district.aggregate([{$sortByCount: '$city'}]); [group + count + sort]
+
+      db.district.aggregate([{$group: {_id: '$city',count: {$sum: 1}}},{$sort: {count: -1}}]);
+
+4.17.2 - count skills used most frequently
+db.skills.insertMany([
+  {name: 'A',skills: ['js','node']},
+  {name: 'B',skills: ['js']},
+  {name: 'C',skills: ['python']}
+]);
+
+     db.skills.aggregate([{$unwind: '$skills'},{$sortByCount: '$skills'}]);
+
+
+
+:: 4.18 $replaceRoot (Replaces the entire document with sub-document inside it)
+4.18.1 - Make address the new root
+db.details.insertMany([
+  {
+    _id: 1,
+    name: 'Basil',
+    address: {
+      city: 'Kochi',
+      pin: 686667
+    }
+  },
+  {
+    _id: 2,
+    name: 'Arjun',
+    address: {
+      city: 'Kollam',
+      pin: 691001
+  }
+  }
+]);
+
+
+db.details.aggregate([{$replaceRoot: {newRoot: '$address'}}]);
+
+
+
+:: 4.19 $replaceWith ($replaceWith is the same as $replaceRoot but newer and more flexible)
+$replaceRoot: {newRoot: '$address'} is the same as $replaceWith: '$address'
+
+db.details.aggregate([{$replaceWith: '$address'}])
+
+db.newUser.insertMany([
+  {
+    _id: 1,
+    name: 'Basil',
+    age: 25,
+    address: {
+      place: 'Pampakuda',
+      pin: 686667
+    }
+  },
+  {
+    _id: 2,
+    name: 'Rosiya',
+    age: 22
+  }
+]);
+
+db.newUser.aggregate([
+  {$replaceWith: {
+    firstname: '$name',
+    old: '$age',
+  }}
+]);
+
+Using $replaceRoot,$replaceWith and $mergeObjects
+db.newUser2.insertMany([
+  {
+    "_id": 1,
+    "name": "Basil",
+    "age": 25,
+    "contact": {
+      "email": "basil@gmail.com",
+      "phone": "9999999999"
+    },
+    "address": {
+      "city": "Kochi",
+      "state": "Kerala",
+      "pin": 682301
+    }
+  },
+  {
+    "_id": 2,
+    "name": "Arjun",
+    "age": 27,
+    "contact": {
+      "email": "arjun@gmail.com",
+      "phone": "8888888888"
+    },
+    "address": {
+      "city": "Kollam",
+      "state": "Kerala",
+      "pin": 691001
+    }
+  }
+]);
+
+4.19.2 - Make the contact object the root document using $replaceRoot OR $replaceWith
+db.newUser2.aggregate([{$replaceRoot: {newRoot: '$contact'}}]);
+db.newUser2.aggregate([{$replaceWith: '$contact'}]);
+
+4.19.3 - Use $replaceWith to flatten the address into the main document
+a. In this method we get all documents ($$ROOT) and '$address' in one object.but we also get address as nested object
+db.newUser2.aggregate([{$replaceWith: {
+  $mergeObjects: [
+    '$$ROOT',
+    '$address'
+  ]
+}}]);
+
+b.In this method we remove address field
+db.newUser2.aggregate([{$replaceWith: {
+  $mergeObjects: [
+    '$$ROOT',
+    '$address'
+  ]
+}},
+{
+  $project: {address: 0}
+}
+]);
+
+c.In this method we remove address field (same as b)
+db.newUser2.aggregate([{$replaceWith: {
+  $mergeObjects: [
+    {
+      _id: '$_id',
+      name: '$name',
+      age: '$age',
+      contact: '$contact'
+    },
+    '$address'
+  ]
+}}]);
+
+4.19.4 - Keep only name,email & city
+         db.newUser2.aggregate([{$replaceWith: 
+         {
+          name: '$name',
+          email: '$contact.email',
+          city: '$address.city'
+         }}]);
+
+4.19.5 - Flatten both contact and address AND remove _id
+         db.newUser2.aggregate([{$replaceWith: {
+          $mergeObjects: [
+            '$$ROOT',
+            '$contact',
+            '$address'
+          ]
+         }},
+         {
+          $project: {contact: 0,address: 0,_id: 0}
+         }
+         ]);
+
+         OR
+
+         db.newUser2.aggregate([{$replaceWith: {
+          $mergeObjects: [
+            {
+              name: '$name',
+              age: '$age'
+            }
+            '$contact',
+            '$address',
+          ]
+         }}])
+
+4.19.6 - Combine contact + address into a new object called details, and make only that the new root
+         db.newUser2.aggregate([{$replaceWith: {
+          details: {
+            $mergeObjects: [
+              '$contact',
+              '$address'
+            ]
+          }
+         }}]);
+
+
+
+:: 4.20 $merge
+db.newUser3.insertMany([
+  {_id: 1,name: 'Basil',amount: 200},
+  {_id: 2,name: 'Arjun',amount: 300},
+  {_id: 3,name: 'John',amount: 150}
+]);
+
+db.newUser5.insertMany([
+  {_id: 'Basil',amount: 200,age: 25},
+  {_id: 'Arjun',amount: 300,age: 22},
+  {_id: 'John',amount: 150,age: 28}
+]);
+
+4.20.1 - Merge into another collection (create new Collection)
+         db.newUser3.aggregate([{$group: {_id: '$name',totalAmount: {$sum: '$amount'}}},
+         {$merge: {into: 'newUser4'}}
+         ]);
+
+
+4.20.2 - Replace existing documents
+         db.newUser3.aggregate([{$group: {_id: '$name',totalAmount: {$sum: '$amount'}}},
+         {$merge: {
+          into: 'newUser5',
+          on: '_id',
+          whenMatched: 'replace',
+          whenNotMatched: 'insert'
+         }}
+         ]);
+         
+
+
+
+     

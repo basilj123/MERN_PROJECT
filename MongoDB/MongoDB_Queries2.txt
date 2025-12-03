@@ -1,0 +1,137 @@
+use newDatabase
+
+db.employee.insertMany([
+  {
+    "name": "Ravi Patel",
+    "age": 34,
+    "position": "Data Analyst",
+    "salary": 78000,
+    "place": "San Francisco",
+    "department": "Data Science",
+    "isActive": false,
+    "skills": ["Python", "SQL", "Tableau"],
+    "projects": [
+      { "name": "Sales Dashboard", "role": "Data Visualizer", "durationMonths": 5 }
+    ]
+  },
+  {
+    "name": "Sara Lee",
+    "age": 26,
+    "position": "Frontend Developer",
+    "salary": 72000,
+    "place": "Miami",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["HTML", "CSS", "React", "JavaScript"],
+    "projects": [
+      { "name": "Website Revamp", "role": "UI Designer", "durationMonths": 4 }
+    ]
+  },
+  {
+    "name": "Daniel Kim",
+    "age": 41,
+    "position": "Project Manager",
+    "salary": 105000,
+    "place": "Seattle",
+    "department": "Management",
+    "isActive": true,
+    "skills": ["Agile", "Scrum", "Leadership"],
+    "projects": [
+      { "name": "Infrastructure Upgrade", "role": "Manager", "durationMonths": 10 }
+    ]
+  },
+  {
+    "name": "Linda Gomez",
+    "age": 38,
+    "position": "HR Specialist",
+    "salary": 68000,
+    "place": "Chicago",
+    "department": "HR",
+    "isActive": false,
+    "skills": ["Recruiting", "Onboarding", "Communication"],
+    "projects": []
+  },
+  {
+    "name": "Mohammed Khan",
+    "age": 30,
+    "position": "Backend Developer",
+    "salary": 88000,
+    "place": "Houston",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["Node.js", "Express", "MongoDB"],
+    "projects": [
+      { "name": "API Gateway", "role": "Lead Developer", "durationMonths": 8 }
+    ]
+  },
+  {
+    "name": "Emily Chen",
+    "age": 24,
+    "position": "UX Designer",
+    "salary": 67000,
+    "place": "Boston",
+    "department": "Design",
+    "isActive": true,
+    "skills": ["Figma", "Sketch", "User Research"],
+    "projects": [
+      { "name": "Mobile App UX", "role": "Designer", "durationMonths": 6 }
+    ]
+  },
+  {
+    "name": "James Smith",
+    "age": 45,
+    "position": "DevOps Engineer",
+    "salary": 97000,
+    "place": "Austin",
+    "department": "IT",
+    "isActive": false,
+    "skills": ["Docker", "Kubernetes", "AWS"],
+    "projects": [
+      { "name": "CI/CD Pipeline", "role": "DevOps Lead", "durationMonths": 12 }
+    ]
+  },
+  {
+    "name": "Alice Johnson",
+    "age": 29,
+    "position": "Software Engineer",
+    "salary": 85000,
+    "place": "New York",
+    "department": "Engineering",
+    "isActive": true,
+    "skills": ["JavaScript", "Node.js", "MongoDB"],
+    "projects": [
+      { "name": "CRM App", "role": "Backend", "durationMonths": 6 },
+      { "name": "E-commerce Site", "role": "Full Stack", "durationMonths": 9 }
+    ]
+  }
+])
+
+
+//Methods to Add new fields
+1.Add Normally
+db.employee.updateOne({name: 'Alice Johnson'},{$push: {skills: 'React'}}) 
+
+2.
+db.employee.updateOne({name: 'Alice Johnson'},{$addToSet: {skills: 'React'}})
+
+3. 
+db.employee.updateOne({name: 'Alice Johnson'},{$push: {skills: {$each: ['HTML','CSS']}}})
+
+4.
+db.employee.updateOne({name: 'Alice Johnson'},{$addToSet: {skills: {$each: ['HTML','CSS']}}})
+
+5.Replace entire field values
+db.employee.updateOne({name: 'Alice Johnson'},{$set: {skills: ['HTML','CSS','JavaScript','Node.js','MongoDB']}})
+
+6.Insert at a specific index - $push with $position
+db.employee.updateOne({name: 'Alice Johnson'},{$push: {skills: {$each: ['TypeScript'],$position: 3}}})
+
+7.Insert and auto-Sort - $push with $sort
+db.employee.updateOne({name: 'Alice Johnson'},{$push: {$skills: {$each: ['TypeScript'],$sort: 1}}}) - Ascending order
+db.employee.updateOne({name: 'Alice Johnson'},{$push: {$skills: {$each: ['TypeScript'],$sort: -1}}}) - Descending order
+
+8.Add a new item only if some condition matches (conditional update)
+db.employee.updateOne({name: 'Alice Johnson',salary: {$gt: 80000}},{$push: {$skills: 'TypeScript'}})
+
+9.Update multiple sets
+db.employee.updateMany({department: 'Engineering'},{$addToSet: {skills: 'Git'}})
