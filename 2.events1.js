@@ -5,7 +5,7 @@ const emitter = new EventEmitter()
 
 emitter.on("message",(data) =>{
     // console.log(data);  
-    console.log(data.text);  
+    console.log(data.text); 
 });
 
 emitter.on("logout",(data) =>{
